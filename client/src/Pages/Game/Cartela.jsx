@@ -205,7 +205,7 @@ const Cartela = () => {
         ))}
       </div>
       <div className="flex gap-10 mt-6 flex-col md:flex-row justify-start items-center ">
-        <div className=" bg-gray-100 flex flex-col md:flex-row gap-2 p-2 rounded-3xl justify-center items-center border-4">
+        <div className=" bg-red-300 flex flex-col md:flex-row gap-2 p-2 rounded-md justify-center items-center ">
           <label className="text-green-800 font-bold text-2xl ">Pattern</label>
            <select
             value={selectedPattern}
@@ -219,10 +219,10 @@ const Cartela = () => {
             <option value={5}>All Lines</option>
           </select>
            </div>
-        <div className="bg-gray-100 flex flex-col md:flex-row gap-2 p-2  justify-center items-center border-4 rounded-3xl">
+        <div className="bg-red-300 flex flex-col md:flex-row gap-2 p-4  justify-center items-center border rounded-md">
          
           <div className=" font-extrabold flex flex-col justify-center items-center ">
-            <span className="text-yellow-900 text-1xl">Total</span>{" "}
+            <span className="text-fuchsia-900 text-1xl">Total</span>{" "}
             <span className="text-blue-900 text-4xl">{Object.values(toggled).filter(Boolean).length}</span>
           </div>
         </div>
@@ -233,21 +233,21 @@ const Cartela = () => {
           </div>
         )}
         <button
-          className="w-full md:flex-1 bg-yellow-500 text-white font-semibold px-10 py-2 rounded-md shadow-md transition-all duration-200 transform hover:scale-[1.02] focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 disabled:opacity-70 disabled:cursor-not-allowed"
+          className="w-full md:flex-1 bg-blue-700 text-white font-semibold px-10 py-2 rounded-md shadow-md transition-all duration-200 transform hover:scale-[1.02] focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 disabled:opacity-70 disabled:cursor-not-allowed"
           type="button"
           onClick={() => navigate("/dashboard")}
         >
           Dashboard
         </button>
         <button
-          className="w-full md:flex-1 bg-green-500 text-white font-semibold px-10  py-2 rounded-md shadow-md transition-all duration-200 transform hover:scale-[1.02] focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 disabled:opacity-70 disabled:cursor-not-allowed"
+          className="w-full md:flex-1 bg-green-700 text-white font-semibold px-10  py-2 rounded-md shadow-md transition-all duration-200 transform hover:scale-[1.02] focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 disabled:opacity-70 disabled:cursor-not-allowed"
           type="button"
           onClick={handleSave}
         >
           Play
         </button>
         <button
-          className="w-full md:flex-1 bg-gradient-to-r bg-red-500 py-2 text-white font-semibold px-10 rounded-md shadow-md transition-all duration-200 transform hover:scale-[1.02] focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 disabled:opacity-70 disabled:cursor-not-allowed"
+          className="w-full md:flex-1 bg-gradient-to-r bg-red-700 py-2 text-white font-semibold px-10 rounded-md shadow-md transition-all duration-200 transform hover:scale-[1.02] focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 disabled:opacity-70 disabled:cursor-not-allowed"
           type="button"
           onClick={handleClear}
         >

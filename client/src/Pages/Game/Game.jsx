@@ -2444,7 +2444,7 @@ const Game = () => {
   `
 
   return (
-    <div className="min-h-screen bg-slate-900 text-white">
+    <div className="min-h-screen bg-gray-900 text-white h-full flex flex-col justify-between  ">
       <div className="fixed top-4 right-4 z-40">
         <div
           className={`flex items-center gap-2 px-3 py-1 rounded-full text-sm ${
@@ -2462,21 +2462,21 @@ const Game = () => {
       
       <style>{animationStyle}</style>
       
-      <div className="min-h-screen bg-salt-900 flex flex-col items-center justify-start py-0">
+      <div className=" bg-gray-900 flex flex-col items-center justify-start py-0">
         <div className="flex flex-col rounded-3xl shadow-xl ">
           <div className="flex flex-col md:flex-row w-full md:w-auto bg-gray-800 rounded-md justify-center items-center mx-2 p-2">
             <div className="flex flex-row md:flex-col font-extrabold text-2xl md:text-4xl tracking-widest h-full w-full md:w-auto md:items-start p-2 gap-2">
               {bingoColumns.map((col) => (
                 <button
                   key={col.letter}
-                  className={`h-12 md:h-16 w-12 md:w-16 mb-0 rounded-md text-white shadow ${col.bg}`}
+                  className={`h-12 md:h-20 w-12 md:w-16 mb-0 rounded-md text-white shadow ${col.bg}`}
                   disabled
                 >
                   {col.letter}
                 </button>
               ))}
             </div>
-            <div className="flex flex-col gap-2 md:gap-2 h-full w-full justify-center items-center p-2">
+            <div className="flex flex-col gap-2 md:gap-6 h-full w-full justify-center items-center p-2">
               {bingoColumns.map((col, colIdx) => (
                 <div
                   key={col.letter}
@@ -2488,7 +2488,7 @@ const Game = () => {
                     return (
                       <button
                         key={num}
-                        className={`h-12 md:h-[3.5rem] w-12 md:w-[4.75rem] mr-1 md:mr-2 rounded-lg md:rounded-md font-bold text-lg md:text-4xl shadow-md transition-all duration-150 ${
+                        className={`h-12 md:h-[5.5rem] w-12 md:w-[4.75rem] mr-1 md:mr-2 rounded-lg md:rounded-md font-bold text-lg md:text-4xl shadow-md transition-all duration-150 ${
                           isShuffling
                             ? "shuffle-effect"
                             : isCalled
@@ -2507,12 +2507,11 @@ const Game = () => {
             </div>
           </div>
         </div>
-        <div className="w-full  mx-auto mt-4 flex flex-col items-center px-2 bg-salt-900 mb-0"> 
+        </div>
+        <div className="w-full  mx-auto flex flex-col items-center px-2 bg-salt-900 mb-2  "> 
           <div className="flex justify-start items-start bg-salt-900 w-full px-32">
-  <div className="flex flex-col items-center justify-center  rounded-3xl shadow-lg p-4 border-b-8 border-gray-900 w-1/3 bg-gray-100">
-    <p className="text-xl mb-2 tracking-wide drop-shadow font-extrabold text-white-800 text-fuchsia-700">
-      Last Five
-    </p>
+  <div className="flex flex-row items-center justify-center  rounded-3xl shadow-lg p-2 px-4  w-1/3 bg-gray-100">
+    
 
     <div className="flex flex-row justify-center gap-2 min-h-[48px]">
       {lastFiveCalled.length === 0 ? (
@@ -2536,7 +2535,7 @@ const Game = () => {
 </div>
 
 
-        <div className="flex flex-col md:flex-row items-end justify-center w-full md:w-[100%] lg:w-[100%] gap-8 py-2 px-10 bg-slate-900 md:mb-0 rounded-lg mx-auto shadow-lg h-[8.5rem]">
+        <div className="flex flex-col md:flex-row items-end justify-center w-full md:w-[100%] lg:w-[100%] gap-8 py-2 px-10 bg-gray-900 md:mb-0 rounded-lg mx-auto shadow-lg h-[8.5rem]">
           
          
           
@@ -2681,8 +2680,8 @@ const Game = () => {
               )} */}
             </div>
           </div>
-          <div className="flex flex-col items-center w-auto mt-3 gap-2  rounded-xl shadow-lg p-4 border-b-4 border-gray-300 bg-gray-800">
-            <div className="flex flex-1 flex-col items-center justify-center w-full mt-2  rounded-3xl shadow-lg p-2 border-b-4   border-gray-400">
+          <div className="flex flex-col items-center w-auto  gap-2  rounded-xl shadow-lg px-2 border-b-4 border-gray-300 bg-gray-800">
+            <div className="flex flex-1 flex-col items-center justify-center w-full   rounded-3xl shadow-lg  border-b-4   border-gray-400">
             <p className="text-[28px] mb-2 tracking-wide drop-shadow font-extrabold flex items-end gap-2">
               <span className="text-white">Progress</span>
               
@@ -2713,17 +2712,17 @@ const Game = () => {
               <span className="text-xs text-fuchsia-600 font-medium">10s</span>
             </div>
             <p className="text-xs text-fuchsia-600 text-center">
-              {isPlaying ? "Speed locked during game" : "Adjust speed"}
+              {isPlaying ? "" : ""}
             </p>
             
           </div>
           
           <div className="flex flex-1 flex-col items-center justify-center w-full mt-2  rounded-xl shadow-lg p-2 border-2 border-gray-300 gap-2 bg-gray-200">
 
-            <p className="text-xl mb-2 tracking-wide drop-shadow font-extrabold flex gap-2 flex-row items-center">
-              <span className="text-fuchsia-800">ባለ</span>
-              <span className="text-green-700 text-1xl font-black">
-                {price ? price.amount : 0} <span className="text-red-600">Birr</span>
+            <p className="text-[16px]  tracking-wide drop-shadow font-extrabold flex  flex-col items-center">
+              <span className="text-fuchsia-800"> {recent?.totalselectedcartela ?? 0} <span className="text-blue-600">  Plyers</span> </span>
+              <span className="text-green-700 text-1xl font-black"> <span className="text-red-600"> by </span> 
+                {price ? price.amount : 0} <span className="text-red-600">  Birr</span>
               </span>
             </p>
             <div>
@@ -2958,7 +2957,7 @@ const Game = () => {
         )}
       
       </div>
-    </div>
+   
   )
 }
 export default Game
