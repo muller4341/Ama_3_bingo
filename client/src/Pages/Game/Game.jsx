@@ -2126,9 +2126,7 @@ const Game = () => {
     if (
       !gameSessionStarted &&
       !isSubmittingPrice &&
-      price &&
       recent &&
-      price.createdBy === currentUser._id &&
       recent.createdBy === currentUser._id &&
       prizeInfo &&
       recent.totalselectedcartela > 3
@@ -2263,78 +2261,45 @@ const Game = () => {
     }
   }, [currentNumber])
 
-  // useEffect(() => {
-  //   if (!currentUser || !currentUser._id) return
-  //   // fetch("/api/price/me")
-  //   //   .then((res) => res.json())
-  //   //   .then((data) => {
-  //   //     if (data.success && data.data && data.data.createdBy === currentUser._id) {
-  //   //       setPrice(data.data)
-  //   //     }
-  //   //   })
-  //   fetch("/api/selectedcartelas/recent")
-  //     .then((res) => res.json())
-  //     .then((data) => {
-  //       if (data.success && data.data && data.data.createdBy === currentUser._id) {
-  //         setRecent(data.data)
-  //       }
-  //     })
-  //   fetch("/api/price/allprice")
-  //     .then((res) => res.json())
-  //     .then((data) => {
-  //       if (data.success && data.data && Array.isArray(data.data.byDay)) {
-  //         setAllPrice(data.data.byDay)
-  //       }
-  //     })
-  //     .catch((error) => {
-  //       console.error("Error fetching allprice:", error)
-  //     })
-  // }, [currentUser])
-
-  // useEffect(() => {
-  //   if (price && recent && typeof recent.totalselectedcartela === "number") {
-  //     console.log("this is the recent:", recent)
-  //     const amount = Number(recent.price)
-  //     const round = Number(recent.round)
-  //     const rentpercent = Number(recent.rentpercent) / 100
-  //     const numberOfSelectedCartelas = recent.totalselectedcartela
-  //     const total = amount * numberOfSelectedCartelas
-  //     let rentAmount = 0
-  //     if (recent.totalselectedcartela > 3) {
-  //       rentAmount = amount * rentpercent * numberOfSelectedCartelas
-  //     }
-
-  //     const winnerPrize = total - rentAmount
-  //     const winRemains = winnerPrize % 10
-  //     setPrizeInfo({ total, rentAmount, winnerPrize, round, winRemains })
-  //   }
-  // }, [price, recent])
-
   useEffect(() => {
   if (!currentUser?._id) {
     console.log("No current user ID, skipping fetch for recent cartela");
     return;
   }
-  fetch(`/api/selectedcartelas/recent?userId=${currentUser._id}`)
-    .then((res) => res.json())
-    .then((data) => {
-      console.log("Raw response from /api/selectedcartelas/recent:", data); // Log raw API response
-      if (data.success && data.data && data.data.createdBy === currentUser._id) {
-        console.log("Setting recent data:", data.data); // Log data being set
-        console.log("rentpercent value:", data.data.rentpercent, "Type:", typeof data.data.rentpercent); // Log rentpercent specifically
-        setRecent(data.data);
-      } else {
-        console.log("Invalid response or user mismatch:", {
-          success: data.success,
-          hasData: !!data.data,
-          createdByMatch: data.data?.createdBy === currentUser._id,
-          data: data
-        });
-      }
-    })
-    .catch((error) => {
-      console.error("Error fetching recent cartela:", error);
-    });
+
+  Promise.all([
+    fetch(`/api/selectedcartelas/recent?userId=${currentUser._id}`)
+      .then((res) => res.json())
+      .then((data) => {
+        console.log("Raw response from /api/selectedcartelas/recent:", data); // Log raw API response
+        if (data.success && data.data && data.data.createdBy === currentUser._id) {
+          console.log("Setting recent data:", data.data); // Log data being set
+          console.log("rentpercent value:", data.data.rentpercent, "Type:", typeof data.data.rentpercent); // Log rentpercent specifically
+          setRecent(data.data);
+        } else {
+          console.log("Invalid response or user mismatch:", {
+            success: data.success,
+            hasData: !!data.data,
+            createdByMatch: data.data?.createdBy === currentUser._id,
+            data: data
+          });
+        }
+      })
+      .catch((error) => {
+        console.error("Error fetching recent cartela:", error);
+      }),
+
+    fetch("/api/price/allprice")
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.success && data.data && Array.isArray(data.data.byDay)) {
+          setAllPrice(data.data.byDay);
+        }
+      })
+      .catch((error) => {
+        console.error("Error fetching allprice:", error);
+      })
+  ]);
 }, [currentUser]);
 
 useEffect(() => {
