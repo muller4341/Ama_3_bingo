@@ -24,9 +24,9 @@ const getStartOfToday = () => {
 
 export const saveSelectedCartelas = async (req, res) => {
   try {
-    const { createdBy, cartelas, numberofwinningpatterns } = req.body;
-    if (!createdBy || !Array.isArray(cartelas) || cartelas.length === 0 || numberofwinningpatterns === undefined) {
-      return res.status(400).json({ message: "createdBy, cartelas, and numberofwinningpatterns are required." });
+    const { createdBy, cartelas, numberofwinningpatterns , price} = req.body;
+    if (!createdBy || !Array.isArray(cartelas) || cartelas.length === 0 || numberofwinningpatterns === undefined || price === undefined) {
+      return res.status(400).json({ message: "createdBy, cartelas, numberofwinningpatterns, and price are required." });
     }
 
     const totalselectedcartela = cartelas.length;
@@ -49,6 +49,8 @@ export const saveSelectedCartelas = async (req, res) => {
       cartelas,
       totalselectedcartela,
       numberofwinningpatterns,
+      price,
+      rentpercent: 20,
       round: nextRound, // Always a number now
     });
 
@@ -62,16 +64,19 @@ export const saveSelectedCartelas = async (req, res) => {
 };
 
 
-// GET /api/selectedcartelas/recent
 export const getMostRecentSelectedCartela = async (req, res) => {
   try {
-    const recent = await SelectedCartela.findOne().sort({ createdAt: -1 });
+    const { userId } = req.query; // Assuming userId is passed from frontend
+    if (!userId) {
+      return res.status(400).json({ message: 'userId is required.' });
+    }
+    const recent = await SelectedCartela.findOne({ createdBy: userId }).sort({ createdAt: -1 });
     if (!recent) {
-      return res.status(404).json({ message: 'No selected cartela found.' });
+      return res.status(404).json({ message: 'No selected cartela found for this user.' });
     }
     res.status(200).json({ success: true, data: recent });
   } catch (error) {
     console.error('Error fetching most recent selected cartela:', error);
     res.status(500).json({ message: 'Server error', error: error.message });
   }
-}; 
+};

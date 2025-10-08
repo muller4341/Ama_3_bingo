@@ -140,12 +140,12 @@ export function DashSidebar() {
             </div>
           </Link>
         ) : (
-          <Link to="/dashboard?tab=price">
+          <Link to="/dashboard?tab=allprice">
             <div
               className={`flex items-center gap-3 px-5 py-3 rounded-2xl cursor-pointer transition-all duration-200 font-semibold text-base group
-                ${tab === "price" ? "bg-white/20 text-white shadow-md border-l-4 border-white" : "hover:bg-white/10 hover:text-yellow-100 text-white"}`}
+                ${tab === "allprice" ? "bg-white/20 text-white shadow-md border-l-4 border-white" : "hover:bg-white/10 hover:text-yellow-100 text-white"}`}
             >
-              {iconMap.price}
+              {iconMap.allprice}
               <span className="truncate">Price</span>
             </div>
           </Link>

@@ -2263,51 +2263,106 @@ const Game = () => {
     }
   }, [currentNumber])
 
-  useEffect(() => {
-    if (!currentUser || !currentUser._id) return
-    fetch("/api/price/me")
-      .then((res) => res.json())
-      .then((data) => {
-        if (data.success && data.data && data.data.createdBy === currentUser._id) {
-          setPrice(data.data)
-        }
-      })
-    fetch("/api/selectedcartelas/recent")
-      .then((res) => res.json())
-      .then((data) => {
-        if (data.success && data.data && data.data.createdBy === currentUser._id) {
-          setRecent(data.data)
-        }
-      })
-    fetch("/api/price/allprice")
-      .then((res) => res.json())
-      .then((data) => {
-        if (data.success && data.data && Array.isArray(data.data.byDay)) {
-          setAllPrice(data.data.byDay)
-        }
-      })
-      .catch((error) => {
-        console.error("Error fetching allprice:", error)
-      })
-  }, [currentUser])
+  // useEffect(() => {
+  //   if (!currentUser || !currentUser._id) return
+  //   // fetch("/api/price/me")
+  //   //   .then((res) => res.json())
+  //   //   .then((data) => {
+  //   //     if (data.success && data.data && data.data.createdBy === currentUser._id) {
+  //   //       setPrice(data.data)
+  //   //     }
+  //   //   })
+  //   fetch("/api/selectedcartelas/recent")
+  //     .then((res) => res.json())
+  //     .then((data) => {
+  //       if (data.success && data.data && data.data.createdBy === currentUser._id) {
+  //         setRecent(data.data)
+  //       }
+  //     })
+  //   fetch("/api/price/allprice")
+  //     .then((res) => res.json())
+  //     .then((data) => {
+  //       if (data.success && data.data && Array.isArray(data.data.byDay)) {
+  //         setAllPrice(data.data.byDay)
+  //       }
+  //     })
+  //     .catch((error) => {
+  //       console.error("Error fetching allprice:", error)
+  //     })
+  // }, [currentUser])
+
+  // useEffect(() => {
+  //   if (price && recent && typeof recent.totalselectedcartela === "number") {
+  //     console.log("this is the recent:", recent)
+  //     const amount = Number(recent.price)
+  //     const round = Number(recent.round)
+  //     const rentpercent = Number(recent.rentpercent) / 100
+  //     const numberOfSelectedCartelas = recent.totalselectedcartela
+  //     const total = amount * numberOfSelectedCartelas
+  //     let rentAmount = 0
+  //     if (recent.totalselectedcartela > 3) {
+  //       rentAmount = amount * rentpercent * numberOfSelectedCartelas
+  //     }
+
+  //     const winnerPrize = total - rentAmount
+  //     const winRemains = winnerPrize % 10
+  //     setPrizeInfo({ total, rentAmount, winnerPrize, round, winRemains })
+  //   }
+  // }, [price, recent])
 
   useEffect(() => {
-    if (price && recent && typeof recent.totalselectedcartela === "number") {
-      const amount = Number(price.amount)
-      const round = Number(recent.round)
-      const rentpercent = Number(price.rentpercent) / 100
-      const numberOfSelectedCartelas = recent.totalselectedcartela
-      const total = amount * numberOfSelectedCartelas
-      let rentAmount = 0
-      if (recent.totalselectedcartela > 3) {
-        rentAmount = amount * rentpercent * numberOfSelectedCartelas
+  if (!currentUser?._id) {
+    console.log("No current user ID, skipping fetch for recent cartela");
+    return;
+  }
+  fetch(`/api/selectedcartelas/recent?userId=${currentUser._id}`)
+    .then((res) => res.json())
+    .then((data) => {
+      console.log("Raw response from /api/selectedcartelas/recent:", data); // Log raw API response
+      if (data.success && data.data && data.data.createdBy === currentUser._id) {
+        console.log("Setting recent data:", data.data); // Log data being set
+        console.log("rentpercent value:", data.data.rentpercent, "Type:", typeof data.data.rentpercent); // Log rentpercent specifically
+        setRecent(data.data);
+      } else {
+        console.log("Invalid response or user mismatch:", {
+          success: data.success,
+          hasData: !!data.data,
+          createdByMatch: data.data?.createdBy === currentUser._id,
+          data: data
+        });
       }
+    })
+    .catch((error) => {
+      console.error("Error fetching recent cartela:", error);
+    });
+}, [currentUser]);
 
-      const winnerPrize = total - rentAmount
-      const winRemains = winnerPrize % 10
-      setPrizeInfo({ total, rentAmount, winnerPrize, round, winRemains })
+useEffect(() => {
+  if (recent && typeof recent.totalselectedcartela === "number") {
+    console.log("Processing recent in useEffect:", recent); // Log recent object
+    console.log("rentpercent before processing:", recent.rentpercent, "Type:", typeof recent.rentpercent); // Log rentpercent
+    const amount = Number(recent.price) || 0;
+    const round = Number(recent.round) || 0;
+    const rentpercent = Number(recent.rentpercent); // Fallback to 20
+    console.log("Calculated rentpercent (after Number conversion):", rentpercent, "rentPercentDecimal:", rentpercent / 100); // Log calculated values
+    const rentPercentDecimal = rentpercent / 100;
+    const numberOfSelectedCartelas = recent.totalselectedcartela;
+    const total = amount * numberOfSelectedCartelas;
+    let rentAmount = 0;
+    if (numberOfSelectedCartelas > 3) {
+      rentAmount = amount * rentPercentDecimal * numberOfSelectedCartelas;
     }
-  }, [price, recent])
+    const winnerPrize = total - rentAmount;
+    const winRemains = winnerPrize % 10;
+    console.log("Prize info:", { total, rentAmount, winnerPrize, round, winRemains }); // Log final calculations
+    setPrizeInfo({ total, rentAmount, winnerPrize, round, winRemains });
+  } else {
+    console.log("useEffect skipped due to invalid recent data:", {
+      recentExists: !!recent,
+      totalselectedcartelaType: typeof recent?.totalselectedcartela
+    });
+  }
+}, [recent]);
 
   const handleCheck = async () => {
     setSearchResult(null)
@@ -2416,7 +2471,7 @@ const Game = () => {
     }
   }, [gameSpeed, isPlaying])
 
-  const animationStyle = `
+   const animationStyle = `
     @keyframes moveInFromBottomRight {
       0% { opacity: 0; transform: translate(120px, 120px) scale(0.2); }
       60% { opacity: 1; transform: translate(-10px, -10px) scale(1.1); }
@@ -2426,11 +2481,23 @@ const Game = () => {
       0%, 100% { opacity: 1; }
       50% { opacity: 0.2; }
     }
-    .blink { animation: blink 1s linear infinite; }
     @keyframes flash-bw-colors {
       0% { background-color: #4b5563; }
       50% { background-color: #111827; }
       100% { background-color: #4b5563; }
+    }
+    @keyframes vibrate {
+      0%, 100% { transform: translate(0); }
+      10%, 30%, 50%, 70%, 90% { transform: translate(-2px, 2px); }
+      20%, 40%, 60%, 80% { transform: translate(2px, -2px); }
+    }
+    @keyframes zoomInOut {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.3); }
+    }
+    @keyframes textBlink {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0; }
     }
     .shuffle-effect {
       animation-name: flash-bw-colors;
@@ -2441,7 +2508,21 @@ const Game = () => {
       border-color: transparent !important;
       color: #22c55e !important;
     }
+    .zoom-number {
+      animation: zoomInOut 4s ease-in-out;
+    }
+    .blink-text {
+      animation-name: textBlink;
+      animation-timing-function: ease-in-out;
+    }
   `
+useEffect(() => {
+  if (currentNumber !== null) {
+    setShowCurrent(true)
+    const timeout = setTimeout(() => setShowCurrent(false), 4000) // Changed from 2500 to 4000
+    return () => clearTimeout(timeout)
+  }
+}, [currentNumber])
 
   return (
     <div className="min-h-screen bg-gray-900 text-white h-full flex flex-col justify-between  ">
@@ -2485,6 +2566,7 @@ const Game = () => {
                   {Array.from({ length: col.range[1] - col.range[0] + 1 }, (_, i) => {
                     const num = col.range[0] + i
                     const isCalled = calledNumbers.includes(num)
+                     const isCurrent = num === currentNumber && showCurrent
                     return (
                       <button
                         key={num}
@@ -2492,13 +2574,18 @@ const Game = () => {
                           isShuffling
                             ? "shuffle-effect"
                             : isCalled
-                              ? "$ text-white  bg-gray-900"
+                              ? "text-white bg-gray-900 "
                               : "bg-gray-800 text-gray-700  border border-gray-700"
                         }`}
                         style={isShuffling ? { animationDelay: `${Math.random() * 2.6}s` } : {}}
                         disabled
                       >
-                        {num}
+                      <span
+              className={isCurrent ? "blink-text" : ""}
+              style={isCurrent ? { animationDuration: "1s", animationIterationCount: 5 } : {}}
+            >
+              {num}
+            </span>
                       </button>
                     )
                   })}
@@ -2720,20 +2807,22 @@ const Game = () => {
           <div className="flex flex-1 flex-col items-center justify-center w-full mt-2  rounded-xl shadow-lg p-2 border-2 border-gray-300 gap-2 bg-gray-200">
 
             <p className="text-[16px]  tracking-wide drop-shadow font-extrabold flex  flex-col items-center">
-              <span className="text-fuchsia-800"> {recent?.totalselectedcartela ?? 0} <span className="text-blue-600">  Plyers</span> </span>
-              <span className="text-green-700 text-1xl font-black"> <span className="text-red-600"> by </span> 
-                {price ? price.amount : 0} <span className="text-red-600">  Birr</span>
+              <span className="text-fuchsia-800 text-3xl"> {recent?.totalselectedcartela ?? 0} <span className="text-blue-600 text-[16px]">  Plyers</span> </span>
+              <span className="text-green-700 text-3xl font-black"> <span className="text-red-600 text-[16px]"> by </span> 
+                {recent ? recent.price : 0} <span className="text-red-600 text-[16px]">Birr</span>
               </span>
             </p>
-            <div>
+            <div className="flex flex-row justify-center items-center gap-1">
               <p className="text-2xl font-bold text-fuchsia-700">Win</p>
-            </div>
+            
             {prizeInfo && (
               <div className="flex items-end gap-1">
                 <span className="text-6xl font-extrabold text-green-600">{Math.trunc(prizeInfo.winnerPrize)}</span>
                 <span className="text-2xl font-bold text-fuchsia-500">Birr</span>
               </div>
             )}
+            </div>
+
           </div>
         </div>
         </div>
@@ -2853,12 +2942,12 @@ const Game = () => {
                   return (
                     <>
                       <div className="text-center mb-4">
-                        <div className="flex items-center justify-center gap-2 mb-3">
+                        <div className="flex items-center justify-center gap-2 mb-3" >
                           <div
                             className={`w-12 h-12 rounded-full flex items-center justify-center ${
                               isWinner
-                                ? "bg-gradient-to-br from-green-300 to-blue-400"
-                                : "bg-gradient-to-br from-red-300 to-orange-400"
+                                ? "bg-green-700"
+                                : "bg-red-700"
                             }`}
                           >
                             {isWinner ? (
@@ -2882,8 +2971,8 @@ const Game = () => {
                             )}
                           </div>
                           <div>
-                            <h2 className="text-2xl font-bold bg-gradient-to-r from-green-500 to-blue-500 bg-clip-text text-transparent">
-                              Cartela #{searchResult.cartela.cartelaNumber}
+                            <h2 className="text-2xl font-bold bg-gradient-to-r from-green-500 to-blue-900 bg-clip-text text-transparent">
+                              Cartela {searchResult.cartela.cartelaNumber}
                             </h2>
                           </div>
                         </div>
@@ -2891,25 +2980,25 @@ const Game = () => {
                           {isWinner
                             ? "Congratulations! This cartela is a winner!"
                             : missedLastCall
-                              ? "This cartela has enough patterns but missed the last called number."
-                              : "This cartela does not have enough winning patterns. It has been locked for this game."}
+                              ? "This cartela is missed"
+                              : " does not have enough winning patterns."}
                         </div>
                       </div>
-                      <div className="rounded-xl p-2 shadow-inner border border-gray-100">
-                        <div className="flex justify-center mb-3">
+                      <div className="rounded-xl p-1 shadow-inner border border-gray-100">
+                        <div className="flex justify-center mb-6 gap-2 ">
                           {bingoColumns.map((col, index) => (
                             <div
                               key={col.letter}
-                              className={`w-12 h-10 bg-fuchsia-200 flex items-center justify-center rounded-t-md font-bold text-2xl text-white shadow-sm ${col.bg} ${index === 0 ? "rounded-tl-md" : ""} ${index === bingoColumns.length - 1 ? "rounded-tr-md" : ""}`}
+                              className={`w-20 h-16 bg-blue-900 flex items-center justify-center rounded-t-md font-bold text-2xl text-white shadow-sm ${index === 0 ? "rounded-tl-md" : ""} ${index === bingoColumns.length - 1 ? "rounded-tr-md" : ""}`}
                             >
                               {col.letter}
                             </div>
                           ))}
                         </div>
-                        <div className="flex flex-col gap-1">
+                        <div className="flex flex-col gap-2">
                           {grid &&
                             grid.map((row, rowIdx) => (
-                              <div key={rowIdx} className="flex gap-1 justify-center">
+                              <div key={rowIdx} className="flex gap-2 justify-center">
                                 {row.map((val, colIdx) => {
                                   const isNum = typeof val === "number"
                                   const isCalled = isNum && calledNumbers.includes(val)
@@ -2920,13 +3009,13 @@ const Game = () => {
                                   return (
                                     <div
                                       key={colIdx}
-                                      className={`w-12 h-10 flex items-center justify-center rounded-md font-semibold text-base border-2 transition-all duration-300 ${
+                                      className={`w-20 h-16 flex items-center justify-center rounded-md font-semibold text-base border-2 transition-all duration-300 ${
                                         isNum
                                           ? isInWinningPattern
-                                            ? "bg-gradient-to-br from-green-300 to-green-500 text-white border-green-600 shadow-md transform scale-105 ring-1 ring-green-200"
+                                            ? "bg-green-600 text-white text-xl font-bold border-green-600 shadow-md transform scale-105 ring-1 ring-green-200"
                                             : isCalled
-                                              ? "bg-gradient-to-br from-yellow-300 to-yellow-500 text-white border-yellow-600 shadow-md transform scale-105"
-                                              : "bg-gradient-to-br from-gray-50 to-gray-200 text-gray-800 border-gray-200 hover:shadow-sm"
+                                              ? "bg-yellow-400 text-white text-xl font-bold border-yellow-400 shadow-md transform scale-105"
+                                              : "bg-gradient-to-br from-gray-50 to-gray-200 text-gray-800 text-xl font-bold border-gray-200 hover:shadow-sm"
                                           : isInWinningPattern
                                             ? "bg-gradient-to-br from-green-300 to-green-500 text-white border-green-600 font-bold text-sm ring-1 ring-green-200"
                                             : "bg-gradient-to-br from-yellow-300 to-orange-300 text-white border-yellow-400 font-bold text-sm"
@@ -2942,7 +3031,7 @@ const Game = () => {
                       </div>
                       <div className="text-center mt-4">
                         <button
-                          className="px-8 py-3 bg-gradient-to-r from-purple-400 to-pink-400 text-white rounded-lg font-semibold text-base shadow-md hover:from-purple-500 hover:to-pink-500 transform hover:scale-105 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-purple-200"
+                          className="px-8 py-3 bg-red-700 text-white rounded-lg font-semibold text-base shadow-md hover:from-purple-500 hover:to-pink-500 transform hover:scale-105 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-purple-200"
                           onClick={() => setShowPopup(false)}
                         >
                           Close

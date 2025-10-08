@@ -19,8 +19,15 @@ const selectedCartelaSchema = new mongoose.Schema({
     type: Number,
     required: true,
   },
-  
-
+  price: {
+    type: Number,
+    required: true,
+  },
+ rentpercent: {
+    type: Number,
+    required: true,
+    default: 20,
+  },
 
   cartelas: [
     {
