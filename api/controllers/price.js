@@ -43,59 +43,6 @@ const getMyPrice = async (req, res, next) => {
     next(errorHandler(500, err.message || "Server error"));
   }
 };
-
-// Upsert AllPrice for a user (add to existing values)
-// export const upsertAllPrice = async (req, res, next) => {
-//   try {
-//     const { createdBy, Total, WinnerPrize, HostingRent, round } = req.body;
-//     if (!createdBy || !Total || !WinnerPrize || !HostingRent || !round) {
-//       return res.status(400).json({ message: 'All fields are required.' });
-//     }
-//     // Always create a new price record (history)
-//     const doc = new AllPrice({ createdBy, Total, WinnerPrize, HostingRent, round });
-//     await doc.save();
-//     res.status(200).json({ success: true, data: doc });
-//   } catch (err) {
-//     next(err);
-//   }
-// };
-
-
-/// Upsert AllPrice for a user (add to existing values, but prevent duplicate round per day per user)
-// export const upsertAllPrice = async (req, res, next) => {
-//   try {
-//     const { createdBy, Total, WinnerPrize, HostingRent, round } = req.body;
-
-//     if (!createdBy || !Total || !WinnerPrize || !HostingRent || !round) {
-//       return res.status(400).json({ message: 'All fields are required.' });
-//     }
-
-//     const todayStart = new Date();
-//     todayStart.setHours(0, 0, 0, 0);
-//     const todayEnd = new Date();
-//     todayEnd.setHours(23, 59, 59, 999);
-
-//     const existingRound = await AllPrice.findOne({
-//       createdBy,
-//       round,
-//       createdAt: { $gte: todayStart, $lte: todayEnd }
-//     });
-
-//     if (existingRound) {
-//       return res.status(400).json({
-//         message: `Round ${round} has already been recorded for this user today.`,
-//       });
-//     }
-
-//     const doc = new AllPrice({ createdBy, Total, WinnerPrize, HostingRent, round });
-//     await doc.save();
-
-//     res.status(200).json({ success: true, data: doc });
-//   } catch (err) {
-//     console.error("Error in upsertAllPrice:", err);  // <-- Add this line
-//     next(err);
-//   }
-// };
 export const upsertAllPrice = async (req, res, next) => {
   try {
     const { createdBy, Total, WinnerPrize, HostingRent, round, winRemains } = req.body;
@@ -240,60 +187,6 @@ const getAllPrice = async (req, res, next) => {
 
 
 
-// POST /api/price/allprice
-// export const upsertAllPrice = async (req, res, next) => {
-//   try {
-//     const { createdBy, Total, WinnerPrize, HostingRent, idempotencyKey } = req.body;
-
-//     if (!createdBy || !Total || !WinnerPrize || !HostingRent) {
-//       return res.status(400).json({ message: "All fields are required." });
-//     }
-
-//     // 1) Strong idempotency path (if client provides a key)
-//     if (idempotencyKey) {
-//       try {
-//         const doc = await AllPrice.create({ createdBy, Total, WinnerPrize, HostingRent, idempotencyKey });
-//         return res.status(200).json({ success: true, data: doc });
-//       } catch (err) {
-//         if (err && err.code === 11000) {
-//           // Already inserted before for this key
-//           return res.status(200).json({ success: true, duplicate: true });
-//         }
-//         throw err;
-//       }
-//     }
-
-//     // 2) Network-safe fallback (no idempotencyKey): use TTL lock record
-//     // Configure window (in ms) to absorb retries/timeouts; adjust as needed
-//     const WINDOW_MS = 2 * 60 * 1000; // 2 minutes
-//     const payloadHash = hashPayload({ createdBy, Total, WinnerPrize, HostingRent });
-//     const lockKey = `allprice:${createdBy}:${payloadHash}`;
-
-//     // Try to reserve this operation (upsert lock if not exists)
-//     // If another request reserved it moments earlier, we treat this as duplicate.
-//     const now = new Date();
-//     const expireAt = new Date(now.getTime() + WINDOW_MS);
-
-//     try {
-//       await IdempotencyRecord.create({ key: lockKey, createdBy, expireAt });
-//       // We got the reservation -> first request in the window: perform insert
-//     } catch (err) {
-//       if (err && err.code === 11000) {
-//         // Lock already exists in window => a previous attempt won (or is in-flight)
-//         return res.status(200).json({ success: true, duplicate: true });
-//       }
-//       throw err;
-//     }
-
-//     // Perform the insert. If insert fails, we keep the lock to avoid duplicates caused by retry storms.
-//     // This favors "no duplicates" over "guaranteed insertion" under severe flakiness.
-//     const doc = await AllPrice.create({ createdBy, Total, WinnerPrize, HostingRent });
-
-//     return res.status(200).json({ success: true, data: doc });
-//   } catch (err) {
-//     next(err);
-//   }
-// };
 
 
 const deletePrice = async (req, res) => {
