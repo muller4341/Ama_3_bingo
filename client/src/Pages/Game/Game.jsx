@@ -841,6 +841,8 @@ useEffect(() => {
     let rentAmount = 0;
     if (numberOfSelectedCartelas > 1) {
       rentAmount = amount * rentPercentDecimal * numberOfSelectedCartelas;
+      // Round UP to the nearest integer (ceiling)
+      rentAmount = Math.ceil(rentAmount)
     }
     const winnerPrize = total - rentAmount;
     const winRemains = winnerPrize % 10;
