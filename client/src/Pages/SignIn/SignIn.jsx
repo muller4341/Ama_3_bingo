@@ -104,7 +104,7 @@ const SignIn = () => {
   return (
     <div className="min-h-screen w-full overflow-hidden bg-[radial-gradient(circle_at_top,_rgba(255,255,255,0.9),_rgba(255,243,205,0.9)_32%,_rgba(245,158,11,0.22)_62%,_rgba(120,53,15,0.92)_100%)]">
       <div className="mx-auto grid min-h-screen w-full max-w-7xl lg:grid-cols-[1.15fr_0.85fr]">
-        <div className="relative flex flex-col justify-center px-6 py-12 text-slate-900 md:px-12 lg:px-16">
+        <div className="relative hidden flex-col justify-center px-6 py-12 text-slate-900 md:px-12 lg:flex lg:px-16">
           <div className="absolute left-10 top-10 h-24 w-24 rounded-full bg-amber-300/40 blur-3xl" />
           <div className="absolute bottom-16 right-16 h-40 w-40 rounded-full bg-fuchsia-500/25 blur-3xl" />
           <div className="relative z-10 max-w-2xl">

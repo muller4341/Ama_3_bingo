@@ -217,7 +217,7 @@ const SignUp = () => {
           </div>
         </div>
 
-        <div className="relative flex flex-col justify-center px-6 py-12 text-slate-900 order-1 lg:order-2 md:px-12 lg:px-16">
+        <div className="relative order-1 hidden flex-col justify-center px-6 py-12 text-slate-900 md:px-12 lg:order-2 lg:flex lg:px-16">
           <div className="absolute right-10 top-10 h-24 w-24 rounded-full bg-amber-300/40 blur-3xl" />
           <div className="absolute bottom-16 left-16 h-40 w-40 rounded-full bg-emerald-500/20 blur-3xl" />
           <div className="relative z-10 max-w-2xl lg:ml-auto">
