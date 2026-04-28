@@ -50,7 +50,7 @@ export const saveSelectedCartelas = async (req, res) => {
       totalselectedcartela,
       numberofwinningpatterns,
       price,
-      rentpercent: 25,
+      rentpercent: 22,
       round: nextRound, // Always a number now
     });
 
